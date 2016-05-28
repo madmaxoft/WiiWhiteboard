@@ -1,0 +1,13 @@
+# VS project housekeeping:
+*.opensdf
+*.sdf
+*.user
+*.suo
+*.db
+*.aps
+
+# Build artifacts:
+Debug/
+Release/
+x64/Debug/
+x64/Release/
