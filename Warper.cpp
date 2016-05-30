@@ -144,7 +144,7 @@ Warper::Matrix::Number Warper::Matrix::determinant() const
 {
   return (
 		m_Matrix[0][0] * (m_Matrix[2][2] * m_Matrix[1][1] - m_Matrix[2][1] * m_Matrix[1][2]) -
-    m_Matrix[1][0] * (m_Matrix[2][2] * m_Matrix[0][1] - m_Matrix[2][1] * m_Matrix[0][2]) +
+		m_Matrix[1][0] * (m_Matrix[2][2] * m_Matrix[0][1] - m_Matrix[2][1] * m_Matrix[0][2]) +
 		m_Matrix[2][0] * (m_Matrix[1][2] * m_Matrix[0][1] - m_Matrix[1][1] * m_Matrix[0][2])
 	);
 }
