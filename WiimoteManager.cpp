@@ -48,7 +48,7 @@ Wiimote::Ids WiimoteManager::enumWiimotes()
 	// Enumerate all devices:
 	GUID hidGuid;
 	HidD_GetHidGuid(&hidGuid);
-	auto hDevInfo = SetupDiGetClassDevs(&hidGuid, nullptr, nullptr, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
+	auto hDevInfo = SetupDiGetClassDevs(&hidGuid, nullptr, nullptr, DIGCF_DEVICEINTERFACE);
 	SP_DEVICE_INTERFACE_DATA diData;
 	diData.cbSize = sizeof(diData);
 	Wiimote::Ids res;
@@ -64,9 +64,10 @@ Wiimote::Ids WiimoteManager::enumWiimotes()
 			continue;
 		}
 		auto diDetail = reinterpret_cast<SP_DEVICE_INTERFACE_DETAIL_DATA_W *>(&buffer);
-		diDetail->cbSize = sizeof(diDetail);
+		diDetail->cbSize = sizeof(*diDetail);
 		if (!SetupDiGetDeviceInterfaceDetailW(hDevInfo, &diData, diDetail, size, nullptr, nullptr))
 		{
+			LOG("SetupDiGetDeviceInterfaceDetailW(#%d) failed: %d", index, GetLastError());
 			continue;
 		}
 
@@ -76,6 +77,7 @@ Wiimote::Ids WiimoteManager::enumWiimotes()
 		HandleGuard handle(CreateFileW(diDetail->DevicePath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
 		if (!HidD_GetAttributes(handle, &attrib))
 		{
+			LOG("Unavailable HID Device: path \"%s\".", Wiimote::IdFromWPath(diDetail->DevicePath).c_str());
 			continue;
 		}
 		LOG("HID device: VID 0x%04x, PID 0x%04x, path \"%s\"", attrib.VendorID, attrib.ProductID, Wiimote::IdFromWPath(diDetail->DevicePath).c_str());
